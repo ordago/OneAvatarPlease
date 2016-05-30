@@ -1,3 +1,12 @@
 <resources>
   <string name="app_name">One Avatar Please!</string>
+
+  <string name="description_image_avatar">Avatar Image</string>
+  <string name="avatar_generator_generate">Generate</string>
+  <string name="avatar_generator_save">Save</string>
+
+  <string name="url_avatar" translatable="false">https://api.adorable.io/avatars/%1$s</string>
+  <string name="avatar_generator_identifier">Avatar Identifier</string>
+  <string name="message_avatar_saved">Avatar saved</string>
+  <string name="message_avatar_not_saved">Avatar not saved</string>
 </resources>
