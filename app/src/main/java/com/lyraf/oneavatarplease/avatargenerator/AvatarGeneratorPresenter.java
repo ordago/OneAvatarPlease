@@ -2,24 +2,24 @@ package com.lyraf.oneavatarplease.avatargenerator;
 
 import android.Manifest;
 import android.graphics.Bitmap;
+import android.text.TextUtils;
 import com.lyraf.oneavatarplease.R;
+import com.lyraf.oneavatarplease.interactors.ConnectivityChecker;
 import com.lyraf.oneavatarplease.interactors.ImageSaver;
 import com.lyraf.oneavatarplease.utils.Constants;
 
 public class AvatarGeneratorPresenter implements AvatarGeneratorContract.Presenter {
   private AvatarGeneratorContract.View mAvatarGeneratorView;
   private ImageSaver mImageSaver;
+  private ConnectivityChecker mConnectivityChecker;
 
-  public AvatarGeneratorPresenter(ImageSaver imageSaver) {
+  public AvatarGeneratorPresenter(ImageSaver imageSaver, ConnectivityChecker connectivityChecker) {
     mImageSaver = imageSaver;
+    mConnectivityChecker = connectivityChecker;
   }
 
   @Override public void setView(AvatarGeneratorContract.View avatarGeneratorView) {
     mAvatarGeneratorView = avatarGeneratorView;
-  }
-
-  @Override public void shareAvatar() {
-
   }
 
   @Override public void saveAvatar(Bitmap avatar, String avatarName) {
@@ -38,6 +38,28 @@ public class AvatarGeneratorPresenter implements AvatarGeneratorContract.Present
 
       case Constants.RESULT_IMAGE_NOT_SAVED:
         mAvatarGeneratorView.showSnackbar(R.string.message_avatar_not_saved);
+        break;
+    }
+  }
+
+  @Override public void validateAvatarIdentifier(String identifier) {
+    if (TextUtils.isEmpty(identifier)) {
+      mAvatarGeneratorView.showAvatarIdentifierError();
+    } else {
+      mAvatarGeneratorView.hideAvatarIdentifierError();
+      mAvatarGeneratorView.showAvatar();
+    }
+  }
+
+  @Override public void checkConnectivity() {
+    int result = mConnectivityChecker.isConnectivityAvailable();
+
+    switch (result) {
+      case Constants.RESULT_CONNECTIVITY_NO_NETWORK:
+        mAvatarGeneratorView.showSnackbar(R.string.error_no_network);
+        break;
+      case Constants.RESULT_CONNECTIVITY_NO_INTERNET:
+        mAvatarGeneratorView.showSnackbar(R.string.error_no_internet);
         break;
     }
   }

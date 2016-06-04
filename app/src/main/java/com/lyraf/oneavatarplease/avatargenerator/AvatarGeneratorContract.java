@@ -7,13 +7,21 @@ public interface AvatarGeneratorContract {
     void showSnackbar(int messageResId);
 
     void requestWriteExternalPermission(String permission, int requestCode);
+
+    void showAvatar();
+
+    void showAvatarIdentifierError();
+
+    void hideAvatarIdentifierError();
   }
 
   interface Presenter {
-    void shareAvatar();
+    void setView(View view);
 
     void saveAvatar(Bitmap avatar, String avatarName);
 
-    void setView(View view);
+    void validateAvatarIdentifier(String identifier);
+
+    void checkConnectivity();
   }
 }
