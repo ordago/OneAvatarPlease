@@ -23,6 +23,7 @@ public class AvatarGeneratorPresenter implements AvatarGeneratorContract.Present
   }
 
   @Override public void saveAvatar(Bitmap avatar, String avatarName) {
+
     int result = mImageSaver.saveImage(avatar, avatarName);
 
     switch (result) {
@@ -43,6 +44,8 @@ public class AvatarGeneratorPresenter implements AvatarGeneratorContract.Present
   }
 
   @Override public void validateAvatarIdentifier(String identifier) {
+    mAvatarGeneratorView.showSnackbar(R.string.message_avatar_generating);
+
     if (TextUtils.isEmpty(identifier)) {
       mAvatarGeneratorView.showAvatarIdentifierError();
     } else {

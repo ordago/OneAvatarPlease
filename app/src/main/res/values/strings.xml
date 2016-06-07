@@ -8,6 +8,7 @@
   <string name="avatar_generator_save">Save</string>
   <string name="avatar_generator_identifier">Avatar Identifier</string>
 
+  <string name="message_avatar_generating">Generating Avatar</string>
   <string name="message_avatar_saved">Avatar saved</string>
   <string name="message_avatar_not_saved">Avatar not saved</string>
 
