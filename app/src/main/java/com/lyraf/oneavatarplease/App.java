@@ -2,23 +2,23 @@ package com.lyraf.oneavatarplease;
 
 import android.app.Application;
 import android.content.Context;
-import com.lyraf.oneavatarplease.dagger.components.AvatarGeneratorComponent;
-import com.lyraf.oneavatarplease.dagger.components.DaggerAvatarGeneratorComponent;
+import com.lyraf.oneavatarplease.dagger.components.AppComponent;
+import com.lyraf.oneavatarplease.dagger.components.DaggerAppComponent;
 import com.lyraf.oneavatarplease.dagger.modules.AppModule;
 import com.lyraf.oneavatarplease.dagger.modules.AvatarGeneratorModule;
 
 public class App extends Application {
-  private AvatarGeneratorComponent mAvatarGeneratorComponent;
+  private AppComponent mAppComponent;
 
-  public static AvatarGeneratorComponent getAvatarGeneratorComponent(Context context) {
+  public static AppComponent getAppComponent(Context context) {
     App app = (App) context.getApplicationContext();
-    return app.mAvatarGeneratorComponent;
+    return app.mAppComponent;
   }
 
   @Override public void onCreate() {
     super.onCreate();
 
-    mAvatarGeneratorComponent = DaggerAvatarGeneratorComponent.builder()
+    mAppComponent = DaggerAppComponent.builder()
         .appModule(new AppModule(this))
         .avatarGeneratorModule(new AvatarGeneratorModule())
         .build();

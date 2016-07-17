@@ -52,7 +52,7 @@ public class AvatarGeneratorFragment extends Fragment implements AvatarGenerator
 
   @Override public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    App.getAvatarGeneratorComponent(getActivity()).inject(this);
+    App.getAppComponent(getActivity()).inject(this);
   }
 
   @Override public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -82,7 +82,7 @@ public class AvatarGeneratorFragment extends Fragment implements AvatarGenerator
   @Override public void showAvatar() {
     Picasso.with(getActivity())
         .load(String.format(getResources().getString(R.string.url_avatar),
-            avatarIdentifier.getText().toString()))
+            avatarIdentifier.getText().toString())).fit().centerCrop()
         .placeholder(R.drawable.ic_avatar_placeholder)
         .error(R.drawable.ic_avatar_empty)
         .into(avatarImage, new Callback() {

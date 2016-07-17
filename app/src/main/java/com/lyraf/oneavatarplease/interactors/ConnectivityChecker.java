@@ -4,11 +4,12 @@ import android.app.Application;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import com.lyraf.oneavatarplease.utils.Constants;
+import javax.inject.Inject;
 
 public class ConnectivityChecker {
   Application mApplication;
 
-  public ConnectivityChecker(Application application) {
+  @Inject public ConnectivityChecker(Application application) {
     mApplication = application;
   }
 

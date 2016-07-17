@@ -7,12 +7,14 @@ import com.lyraf.oneavatarplease.R;
 import com.lyraf.oneavatarplease.interactors.ConnectivityChecker;
 import com.lyraf.oneavatarplease.interactors.ImageSaver;
 import com.lyraf.oneavatarplease.utils.Constants;
+import javax.inject.Inject;
 
 public class AvatarGeneratorPresenter implements AvatarGeneratorContract.Presenter {
   private AvatarGeneratorContract.View mAvatarGeneratorView;
   private ImageSaver mImageSaver;
   private ConnectivityChecker mConnectivityChecker;
 
+  @Inject
   public AvatarGeneratorPresenter(ImageSaver imageSaver, ConnectivityChecker connectivityChecker) {
     mImageSaver = imageSaver;
     mConnectivityChecker = connectivityChecker;

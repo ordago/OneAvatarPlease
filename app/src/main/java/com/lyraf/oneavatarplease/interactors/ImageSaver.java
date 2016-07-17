@@ -7,11 +7,12 @@ import android.graphics.Bitmap;
 import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
 import com.lyraf.oneavatarplease.utils.Constants;
+import javax.inject.Inject;
 
 public class ImageSaver {
   Application mApplication;
 
-  public ImageSaver(Application application) {
+  @Inject public ImageSaver(Application application) {
     mApplication = application;
   }
 
