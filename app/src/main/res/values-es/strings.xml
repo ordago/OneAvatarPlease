@@ -1,0 +1,18 @@
+<resources>
+  <string name="app_name" translatable="false">One Avatar Please!</string>
+  <string name="url_avatar" translatable="false">https://api.adorable.io/avatars/%1$s</string>
+
+  <string name="description_image_avatar">Imagen del avatar</string>
+
+  <string name="avatar_generator_generate">Generar</string>
+  <string name="avatar_generator_save">Guardar</string>
+  <string name="avatar_generator_identifier">Identificador de avatar</string>
+
+  <string name="message_avatar_generating">Generando avatar</string>
+  <string name="message_avatar_saved">Avatar guardado</string>
+  <string name="message_avatar_not_saved">No se ha guardado el Avatar</string>
+
+  <string name="error_no_network">Red no disponible</string>
+  <string name="error_no_internet">No hay Internet disponible</string>
+  <string name="error_no_identifier">Se necesita un identificador</string>
+</resources>
