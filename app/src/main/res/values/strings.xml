@@ -8,11 +8,18 @@
   <string name="avatar_generator_save">Save</string>
   <string name="avatar_generator_identifier">Avatar Identifier</string>
 
+  <string name="action_avatar_show">Show</string>
+
   <string name="message_avatar_generating">Generating Avatar</string>
+
   <string name="message_avatar_saved">Avatar saved</string>
-  <string name="message_avatar_not_saved">Avatar not saved</string>
 
   <string name="error_no_network">Network not available</string>
   <string name="error_no_internet">No internet available</string>
   <string name="error_no_identifier">An identifier is required</string>
+  <string name="error_avatar_not_saved">Avatar not saved</string>
+  <string name="error_avatar_not_generated">Avatar not generated</string>
+  <string name="error_avatar_already_saved">Avatar already saved</string>
+  <string name="error_avatar_already_generated">Avatar already generated</string>
+
 </resources>

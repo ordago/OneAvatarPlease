@@ -14,6 +14,10 @@ public class AvatarGeneratorPresenter implements AvatarGeneratorContract.Present
   private ImageSaver mImageSaver;
   private ConnectivityChecker mConnectivityChecker;
 
+  private Bitmap mGeneratedAvatar;
+  private String mLastIdentifier;
+  private String mLastSavedAvatarIdentifier;
+
   @Inject
   public AvatarGeneratorPresenter(ImageSaver imageSaver, ConnectivityChecker connectivityChecker) {
     mImageSaver = imageSaver;
@@ -24,36 +28,59 @@ public class AvatarGeneratorPresenter implements AvatarGeneratorContract.Present
     mAvatarGeneratorView = avatarGeneratorView;
   }
 
-  @Override public void saveAvatar(Bitmap avatar, String avatarName) {
+  @Override public void saveAvatar(String identifier) {
+    if (mGeneratedAvatar == null) {
+      mAvatarGeneratorView.showSnackbar(R.string.error_avatar_not_generated);
+    } else if (TextUtils.equals(identifier, mLastSavedAvatarIdentifier)) {
+      mAvatarGeneratorView.showGalleryActionSnackbar(R.string.error_avatar_already_saved,
+          R.string.action_avatar_show);
+    } else {
+      String result = mImageSaver.saveImage(mGeneratedAvatar, identifier);
 
-    int result = mImageSaver.saveImage(avatar, avatarName);
-
-    switch (result) {
-      case Constants.RESULT_IMAGE_NO_WRITE_EXTERNAL_PERMISSION:
+      if (result == null) {
+        mAvatarGeneratorView.showSnackbar(R.string.error_avatar_not_saved);
+      } else if (TextUtils.isEmpty(result)) {
         mAvatarGeneratorView.requestWriteExternalPermission(
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Constants.REQUEST_CODE_WRITE_EXTERNAL_STORAGE);
-        break;
-
-      case Constants.RESULT_IMAGE_SAVED:
-        mAvatarGeneratorView.showSnackbar(R.string.message_avatar_saved);
-        break;
-
-      case Constants.RESULT_IMAGE_NOT_SAVED:
-        mAvatarGeneratorView.showSnackbar(R.string.message_avatar_not_saved);
-        break;
+      } else {
+        mLastSavedAvatarIdentifier = identifier;
+        mAvatarGeneratorView.showGalleryActionSnackbar(R.string.message_avatar_saved,
+            R.string.action_avatar_show);
+      }
     }
   }
 
-  @Override public void validateAvatarIdentifier(String identifier) {
-    mAvatarGeneratorView.showSnackbar(R.string.message_avatar_generating);
+  @Override public void setGeneratedAvatar(Bitmap generatedAvatar) {
+    if (generatedAvatar != null) {
+      mAvatarGeneratorView.showSave();
+      mGeneratedAvatar = generatedAvatar;
+    }
+  }
 
+  @Override public void restoreGeneratedAvatar() {
+    if (mGeneratedAvatar != null) {
+      mAvatarGeneratorView.showAvatar(mGeneratedAvatar);
+    }
+  }
+
+  @Override public void validateIdentifier(String identifier) {
     if (TextUtils.isEmpty(identifier)) {
       mAvatarGeneratorView.showAvatarIdentifierError();
+    } else if (TextUtils.equals(identifier, mLastIdentifier)) {
+      mAvatarGeneratorView.showSnackbar(R.string.error_avatar_already_generated);
     } else {
+      mAvatarGeneratorView.hideSave();
+
+      mLastIdentifier = identifier;
+      mAvatarGeneratorView.showSnackbar(R.string.message_avatar_generating);
       mAvatarGeneratorView.hideAvatarIdentifierError();
-      mAvatarGeneratorView.showAvatar();
+      mAvatarGeneratorView.loadAvatar();
     }
+  }
+
+  @Override public void openGallery() {
+    mAvatarGeneratorView.showGallery(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
   }
 
   @Override public void checkConnectivity() {

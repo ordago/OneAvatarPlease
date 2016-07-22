@@ -1,7 +1,10 @@
 package com.lyraf.oneavatarplease.avatargenerator;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -26,92 +29,118 @@ import com.squareup.picasso.Picasso;
 import javax.inject.Inject;
 
 public class AvatarGeneratorFragment extends Fragment implements AvatarGeneratorContract.View {
-  @Inject AvatarGeneratorContract.Presenter mPresenter;
+  @Inject AvatarGeneratorContract.Presenter presenter;
   @BindView(R.id.avatar_generator_root) LinearLayout root;
-  @BindView(R.id.button_avatar_save) Button saveAvatarButton;
-  @BindView(R.id.image_avatar) ImageView avatarImage;
-  @BindView(R.id.floating_text_avatar_identifier) TextInputLayout floatingAvatarIdentifier;
-  @BindView(R.id.text_avatar_identifier) EditText avatarIdentifier;
+  @BindView(R.id.button_avatar_save) Button buttonSaveAvatar;
+  @BindView(R.id.image_avatar) ImageView imageAvatar;
+  @BindView(R.id.floating_text_avatar_identifier) TextInputLayout inputAvatarIdentifier;
+  @BindView(R.id.text_avatar_identifier) EditText textAvatarIdentifier;
+
   private Unbinder mUnbinder;
 
   public AvatarGeneratorFragment() {
   }
 
   @OnClick(R.id.button_avatar_generate) void generateAvatar() {
-    if (saveAvatarButton.getVisibility() == View.VISIBLE) {
-      saveAvatarButton.setVisibility(View.GONE);
-    }
-
-    mPresenter.validateAvatarIdentifier(avatarIdentifier.getText().toString());
+    presenter.validateIdentifier(textAvatarIdentifier.getText().toString());
   }
 
   @OnClick(R.id.button_avatar_save) void saveAvatar() {
-    mPresenter.saveAvatar(((BitmapDrawable) avatarImage.getDrawable()).getBitmap(),
-        avatarIdentifier.getText().toString());
+    presenter.saveAvatar(textAvatarIdentifier.getText().toString());
   }
 
   @Override public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
     App.getAppComponent(getActivity()).inject(this);
   }
 
   @Override public View onCreateView(LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
-    return inflater.inflate(R.layout.fragment_avatar_generator, container, false);
-  }
+    View view = inflater.inflate(R.layout.fragment_avatar_generator, container, false);
 
-  @Override public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
     mUnbinder = ButterKnife.bind(this, view);
-    mPresenter.setView(this);
+    presenter.setView(this);
+
+    if (savedInstanceState != null) {
+      presenter.restoreGeneratedAvatar();
+    }
+
+    return view;
   }
 
   @Override public void onDestroyView() {
     super.onDestroyView();
     mUnbinder.unbind();
-    mPresenter.setView(null);
+    presenter.setView(null);
   }
 
   @Override public void showSnackbar(int messageResId) {
     Snackbar.make(root, messageResId, Snackbar.LENGTH_SHORT).show();
   }
 
+  @Override public void showGalleryActionSnackbar(int messageResId, int actionResId) {
+    Snackbar.make(root, messageResId, Snackbar.LENGTH_LONG)
+        .setAction(actionResId, new View.OnClickListener() {
+          @Override public void onClick(View view) {
+            presenter.openGallery();
+          }
+        })
+        .show();
+  }
+
   @Override public void requestWriteExternalPermission(String permission, int requestCode) {
     requestPermissions(new String[] { permission }, requestCode);
   }
 
-  @Override public void showAvatar() {
+  @Override public void loadAvatar() {
     Picasso.with(getActivity())
         .load(String.format(getResources().getString(R.string.url_avatar),
-            avatarIdentifier.getText().toString())).fit().centerCrop()
+            textAvatarIdentifier.getText().toString())).fit().centerCrop()
         .placeholder(R.drawable.ic_avatar_placeholder)
-        .error(R.drawable.ic_avatar_empty)
-        .into(avatarImage, new Callback() {
+        .error(R.drawable.ic_avatar_empty).into(imageAvatar, new Callback() {
           @Override public void onSuccess() {
-            saveAvatarButton.setVisibility(View.VISIBLE);
+            presenter.setGeneratedAvatar(((BitmapDrawable) imageAvatar.getDrawable()).getBitmap());
           }
 
           @Override public void onError() {
-            mPresenter.checkConnectivity();
+            presenter.checkConnectivity();
           }
         });
   }
 
+  @Override public void showAvatar(Bitmap avatar) {
+    imageAvatar.setImageBitmap(avatar);
+  }
+
+  @Override public void hideSave() {
+    buttonSaveAvatar.setVisibility(View.GONE);
+  }
+
+  @Override public void showSave() {
+    buttonSaveAvatar.setVisibility(View.VISIBLE);
+  }
+
   @Override public void showAvatarIdentifierError() {
-    floatingAvatarIdentifier.setError(getContext().getString(R.string.error_no_identifier));
-    floatingAvatarIdentifier.setErrorEnabled(true);
+    inputAvatarIdentifier.setError(getContext().getString(R.string.error_no_identifier));
+    inputAvatarIdentifier.setErrorEnabled(true);
   }
 
   @Override public void hideAvatarIdentifierError() {
-    floatingAvatarIdentifier.setError(null);
-    floatingAvatarIdentifier.setErrorEnabled(false);
+    inputAvatarIdentifier.setError(null);
+    inputAvatarIdentifier.setErrorEnabled(false);
+  }
+
+  @Override public void showGallery(Uri uri) {
+    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+    startActivity(intent);
   }
 
   @Override public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
       @NonNull int[] grantResults) {
     for (int result : grantResults) {
       if (result == PackageManager.PERMISSION_GRANTED) {
-        mPresenter.saveAvatar(((BitmapDrawable) avatarImage.getDrawable()).getBitmap(),
-            avatarIdentifier.getText().toString());
+        presenter.saveAvatar(textAvatarIdentifier.getText().toString());
       } else {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
       }
