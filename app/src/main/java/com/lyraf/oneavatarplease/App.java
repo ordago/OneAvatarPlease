@@ -5,7 +5,6 @@ import android.content.Context;
 import com.lyraf.oneavatarplease.dagger.components.AppComponent;
 import com.lyraf.oneavatarplease.dagger.components.DaggerAppComponent;
 import com.lyraf.oneavatarplease.dagger.modules.AppModule;
-import com.lyraf.oneavatarplease.dagger.modules.AvatarGeneratorModule;
 
 public class App extends Application {
   private AppComponent mAppComponent;
@@ -20,7 +19,6 @@ public class App extends Application {
 
     mAppComponent = DaggerAppComponent.builder()
         .appModule(new AppModule(this))
-        .avatarGeneratorModule(new AvatarGeneratorModule())
         .build();
   }
 }

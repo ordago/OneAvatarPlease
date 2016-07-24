@@ -20,3 +20,7 @@
 [Adorable Avatars]
 
 [Adorable Avatars]:http://avatars.adorable.io/
+
+## Screenshot
+
+![Screenshot](PlayStore/screenshots/Screenshot_01.png)

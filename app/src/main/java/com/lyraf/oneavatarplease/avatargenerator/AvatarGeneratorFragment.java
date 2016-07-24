@@ -29,7 +29,7 @@ import com.squareup.picasso.Picasso;
 import javax.inject.Inject;
 
 public class AvatarGeneratorFragment extends Fragment implements AvatarGeneratorContract.View {
-  @Inject AvatarGeneratorContract.Presenter presenter;
+  @Inject AvatarGeneratorPresenter presenter;
   @BindView(R.id.avatar_generator_root) LinearLayout root;
   @BindView(R.id.button_avatar_save) Button buttonSaveAvatar;
   @BindView(R.id.image_avatar) ImageView imageAvatar;
@@ -96,9 +96,12 @@ public class AvatarGeneratorFragment extends Fragment implements AvatarGenerator
   @Override public void loadAvatar() {
     Picasso.with(getActivity())
         .load(String.format(getResources().getString(R.string.url_avatar),
-            textAvatarIdentifier.getText().toString())).fit().centerCrop()
+            textAvatarIdentifier.getText().toString()))
+        .fit()
+        .centerCrop()
         .placeholder(R.drawable.ic_avatar_placeholder)
-        .error(R.drawable.ic_avatar_empty).into(imageAvatar, new Callback() {
+        .error(R.drawable.ic_avatar_empty)
+        .into(imageAvatar, new Callback() {
           @Override public void onSuccess() {
             presenter.setGeneratedAvatar(((BitmapDrawable) imageAvatar.getDrawable()).getBitmap());
           }

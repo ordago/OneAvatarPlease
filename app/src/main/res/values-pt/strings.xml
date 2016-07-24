@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="description_image_avatar">Imagem do Avatar</string>
+
+  <string name="avatar_generator_generate">Gerar</string>
+  <string name="avatar_generator_identifier">Identificador do Avatar</string>
+  <string name="avatar_generator_save">Salvar</string>
+
+  <string name="action_avatar_show">Mostrar</string>
+
+  <string name="message_avatar_generating">Gerando Avatar</string>
+  <string name="message_avatar_saved">Avatar salvo</string>
+
+  <string name="error_no_network">Conexão não disponível</string>
+  <string name="error_no_internet">Internet não disponível</string>
+  <string name="error_no_identifier">É necessário um identificador</string>
+  <string name="error_avatar_not_saved">Avatar não foi salvo</string>
+  <string name="error_avatar_not_generated">Avatar não foi gerado</string>
+  <string name="error_avatar_already_saved">Avatar já foi salvo</string>
+  <string name="error_avatar_already_generated">Avatar já foi gerado</string>
+
+</resources>

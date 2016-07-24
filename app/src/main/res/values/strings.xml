@@ -11,7 +11,6 @@
   <string name="action_avatar_show">Show</string>
 
   <string name="message_avatar_generating">Generating Avatar</string>
-
   <string name="message_avatar_saved">Avatar saved</string>
 
   <string name="error_no_network">Network not available</string>
