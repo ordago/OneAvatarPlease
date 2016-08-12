@@ -1,7 +1,7 @@
-package com.lyraf.oneavatarplease.dagger.components;
+package com.lyraf.oneavatarplease.injection.components;
 
 import com.lyraf.oneavatarplease.avatargenerator.AvatarGeneratorFragment;
-import com.lyraf.oneavatarplease.dagger.modules.AppModule;
+import com.lyraf.oneavatarplease.injection.modules.AppModule;
 import dagger.Component;
 import javax.inject.Singleton;
 

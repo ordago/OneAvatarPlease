@@ -2,9 +2,9 @@ package com.lyraf.oneavatarplease;
 
 import android.app.Application;
 import android.content.Context;
-import com.lyraf.oneavatarplease.dagger.components.AppComponent;
-import com.lyraf.oneavatarplease.dagger.components.DaggerAppComponent;
-import com.lyraf.oneavatarplease.dagger.modules.AppModule;
+import com.lyraf.oneavatarplease.injection.components.AppComponent;
+import com.lyraf.oneavatarplease.injection.components.DaggerAppComponent;
+import com.lyraf.oneavatarplease.injection.modules.AppModule;
 
 public class App extends Application {
   private AppComponent mAppComponent;

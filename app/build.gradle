@@ -1,53 +1,56 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'me.tatarka.retrolambda'
 
 android {
-  compileSdkVersion 24
-  buildToolsVersion "24.0.0"
+  compileSdkVersion rootProject.ext.compileSdkVersion
+  buildToolsVersion rootProject.ext.buildToolsVersion
 
   defaultConfig {
     applicationId "com.lyraf.oneavatarplease"
-    minSdkVersion 15
-    targetSdkVersion 24
+    minSdkVersion rootProject.ext.minSdkVersion
+    targetSdkVersion rootProject.ext.targetSdkVersion
     versionCode 1
-    versionName "0.0.1"
+    versionName "0.1.0"
+    resConfigs "en", "es", "pt"
 
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    vectorDrawables.useSupportLibrary = true
   }
+
   buildTypes {
-    debug {
-      minifyEnabled false
-    }
     release {
       minifyEnabled true
+      shrinkResources true
       proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
     }
+  }
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
   }
 }
 
 dependencies {
   compile fileTree(dir: 'libs', include: ['*.jar'])
 
-  androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
-  androidTestCompile 'com.android.support.test:runner:0.5'
+  testCompile "junit:junit:$rootProject.junitVersion"
+  testCompile "org.mockito:mockito-all:$rootProject.mockitoVersion"
+  testCompile "org.robolectric:robolectric:$rootProject.robolectricVersion"
+
+  compile "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
+  compile "com.android.support:support-v4:$rootProject.supportLibraryVersion"
+  compile "com.android.support:design:$rootProject.supportLibraryVersion"
+  compile "com.squareup.picasso:picasso:$rootProject.picassoVersion"
+  compile "com.jakewharton:butterknife:$rootProject.butterknifeVersion"
+  compile "com.google.dagger:dagger:$rootProject.daggerVersion"
+
+  apt "com.jakewharton:butterknife-compiler:$rootProject.butterknifeVersion"
+  apt "com.google.dagger:dagger-compiler:$rootProject.daggerVersion"
 
   configurations.androidTestCompile.dependencies.each { androidTestCompileDependency ->
     androidTestCompileDependency.exclude group: 'com.android.support'
   }
-
-  testCompile 'junit:junit:4.12'
-  testCompile 'org.mockito:mockito-all:2.0.2-beta'
-  testCompile "org.robolectric:robolectric:3.1"
-
-  compile 'com.android.support:appcompat-v7:24.1.1'
-  compile 'com.android.support:support-v4:24.1.1'
-  compile 'com.android.support:design:24.1.1'
-  compile 'com.squareup.picasso:picasso:2.5.2'
-  compile 'com.jakewharton:butterknife:8.0.1'
-  compile 'com.google.dagger:dagger:2.2'
-
-  apt 'com.jakewharton:butterknife-compiler:8.0.1'
-  apt 'com.google.dagger:dagger-compiler:2.2'
-
-  provided 'javax.annotation:jsr250-api:1.0'
 }

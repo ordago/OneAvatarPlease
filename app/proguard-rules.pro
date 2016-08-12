@@ -52,3 +52,7 @@
     public static int d(...);
     public static int e(...);
 }
+
+# Retrolambda
+
+-dontwarn java.lang.invoke.*

@@ -14,7 +14,6 @@
   <string name="error_no_internet">No hay Internet disponible</string>
   <string name="error_no_identifier">Se necesita un identificador</string>
   <string name="error_avatar_not_saved">No se ha guardado el Avatar</string>
-  <string name="error_avatar_not_generated">No se ha generado el Avatar</string>
   <string name="error_avatar_already_generated">Avatar ya se generado</string>
   <string name="error_avatar_already_saved">Avatar ya se guardo</string>
 

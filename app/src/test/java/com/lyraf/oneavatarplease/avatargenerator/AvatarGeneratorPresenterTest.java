@@ -2,47 +2,51 @@ package com.lyraf.oneavatarplease.avatargenerator;
 
 import android.Manifest;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Build;
 import com.lyraf.oneavatarplease.BuildConfig;
 import com.lyraf.oneavatarplease.R;
-import com.lyraf.oneavatarplease.interactors.ConnectivityChecker;
-import com.lyraf.oneavatarplease.interactors.ImageSaver;
+import com.lyraf.oneavatarplease.interactors.ImageInteractor;
+import com.lyraf.oneavatarplease.interactors.NetworkInteractor;
 import com.lyraf.oneavatarplease.utils.Constants;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-@RunWith(RobolectricGradleTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.M)
 public class AvatarGeneratorPresenterTest {
+  private final String mTestIdentifier = "Identifier";
+  private final String mTestUrl = "Url";
+  private final Uri mTestUri = Uri.parse(mTestUrl);
+  private final Bitmap mTestAvatar = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+  @Captor ArgumentCaptor<ImageInteractor.OnImageSavedCallback> mOnImageSavedCaptor;
+  @Captor ArgumentCaptor<NetworkInteractor.OnConnectivityCheckedCallback>
+      mOnConnectivityCheckedCaptor;
   @Mock private AvatarGeneratorContract.View mView;
-  @Mock private ImageSaver mImageSaver;
-  @Mock private ConnectivityChecker mConnectivityChecker;
-
+  @Mock private ImageInteractor mImageInteractor;
+  @Mock private NetworkInteractor mNetworkInteractor;
   private AvatarGeneratorContract.Presenter mPresenter;
-
-  private String mTestIdentifier = "Identifier";
-  private String mEmpty = "";
-
-  private Bitmap mTestAvatar = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
 
   @Before public void setupAvatarGeneratorPresenter() {
     initMocks(this);
 
-    mPresenter = new AvatarGeneratorPresenter(mImageSaver, mConnectivityChecker);
+    mPresenter = new AvatarGeneratorPresenter(mImageInteractor, mNetworkInteractor);
     mPresenter.setView(mView);
   }
 
   @Test public void emptyIdentifier() {
-    mPresenter.validateIdentifier(mEmpty);
+    mPresenter.validateIdentifier("");
 
     verify(mView).showAvatarIdentifierError();
   }
@@ -70,26 +74,29 @@ public class AvatarGeneratorPresenterTest {
   }
 
   @Test public void saveAvatar() {
-    when(mImageSaver.saveImage(mTestAvatar, mTestIdentifier)).thenReturn("URL");
-
     mPresenter.setGeneratedAvatar(mTestAvatar);
 
     mPresenter.saveAvatar(mTestIdentifier);
 
-    verify(mImageSaver).saveImage(Matchers.eq(mTestAvatar), Matchers.eq(mTestIdentifier));
+    verify(mImageInteractor).saveImage(eq(mTestAvatar), eq(mTestIdentifier),
+        mOnImageSavedCaptor.capture());
+    mOnImageSavedCaptor.getValue().OnImageSaveSaved(mTestIdentifier, mTestUrl);
 
-    verify(mView).showGalleryActionSnackbar(R.string.message_avatar_saved,
-        R.string.action_avatar_show);
+    verify(mView).showGalleryActionSnackbar(R.string.message_avatar_saved);
+
+    mPresenter.openGallery();
+
+    verify(mView).showGallery(mTestUri);
   }
 
   @Test public void saveAvatarNoPermission() {
-    when(mImageSaver.saveImage(mTestAvatar, mTestIdentifier)).thenReturn(mEmpty);
-
     mPresenter.setGeneratedAvatar(mTestAvatar);
 
     mPresenter.saveAvatar(mTestIdentifier);
 
-    verify(mImageSaver).saveImage(Matchers.eq(mTestAvatar), Matchers.eq(mTestIdentifier));
+    verify(mImageInteractor).saveImage(eq(mTestAvatar), eq(mTestIdentifier),
+        mOnImageSavedCaptor.capture());
+    mOnImageSavedCaptor.getValue().OnImageSaveNoPermission();
 
     verify(mView).requestWriteExternalPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE,
         Constants.REQUEST_CODE_WRITE_EXTERNAL_STORAGE);
@@ -100,48 +107,47 @@ public class AvatarGeneratorPresenterTest {
   }
 
   @Test public void saveAvatarNotSaved() {
-    when(mImageSaver.saveImage(mTestAvatar, mTestIdentifier)).thenReturn(null);
-
     mPresenter.setGeneratedAvatar(mTestAvatar);
 
     mPresenter.saveAvatar(mTestIdentifier);
 
-    verify(mImageSaver).saveImage(Matchers.eq(mTestAvatar), Matchers.eq(mTestIdentifier));
+    verify(mImageInteractor).saveImage(eq(mTestAvatar), eq(mTestIdentifier),
+        mOnImageSavedCaptor.capture());
+    mOnImageSavedCaptor.getValue().OnImageSaveNotSaved();
 
     verify(mView).showSnackbar(R.string.error_avatar_not_saved);
   }
 
-  @Test public void saveAvatarNotGenerated() {
-    mPresenter.setGeneratedAvatar(null);
-
-    mPresenter.saveAvatar(mTestIdentifier);
-
-    verify(mView).showSnackbar(R.string.error_avatar_not_generated);
-  }
-
   @Test public void saveAvatarAlreadySaved() {
-    when(mImageSaver.saveImage(mTestAvatar, mTestIdentifier)).thenReturn("URL");
-
     mPresenter.setGeneratedAvatar(mTestAvatar);
 
     mPresenter.saveAvatar(mTestIdentifier);
 
-    verify(mImageSaver).saveImage(Matchers.eq(mTestAvatar), Matchers.eq(mTestIdentifier));
+    verify(mImageInteractor).saveImage(eq(mTestAvatar), eq(mTestIdentifier),
+        mOnImageSavedCaptor.capture());
+    mOnImageSavedCaptor.getValue().OnImageSaveSaved(mTestIdentifier, mTestUrl);
 
-    verify(mView).showGalleryActionSnackbar(R.string.message_avatar_saved,
-        R.string.action_avatar_show);
+    verify(mView).showGalleryActionSnackbar(R.string.message_avatar_saved);
 
     mPresenter.saveAvatar(mTestIdentifier);
 
-    verify(mView).showGalleryActionSnackbar(R.string.error_avatar_already_saved,
-        R.string.action_avatar_show);
+    verify(mView).showGalleryActionSnackbar(R.string.error_avatar_already_saved);
+  }
+
+  @Test public void connectivityAvailable() {
+    mPresenter.checkConnectivity();
+
+    verify(mNetworkInteractor).isConnectivityAvailable(mOnConnectivityCheckedCaptor.capture());
+    mOnConnectivityCheckedCaptor.getValue().onConnectivityAvailable();
+
+    verify(mView).generateAvatar();
   }
 
   @Test public void connectivityNoInternet() {
-    when(mConnectivityChecker.isConnectivityAvailable()).thenReturn(
-        Constants.RESULT_CONNECTIVITY_NO_INTERNET);
-
     mPresenter.checkConnectivity();
+
+    verify(mNetworkInteractor).isConnectivityAvailable(mOnConnectivityCheckedCaptor.capture());
+    mOnConnectivityCheckedCaptor.getValue().onConnectivityNoInternet();
 
     verify(mView).showSnackbar(R.string.error_no_internet);
 
@@ -149,22 +155,13 @@ public class AvatarGeneratorPresenterTest {
   }
 
   @Test public void connectivityNoNetwork() {
-    when(mConnectivityChecker.isConnectivityAvailable()).thenReturn(
-        Constants.RESULT_CONNECTIVITY_NO_NETWORK);
-
     mPresenter.checkConnectivity();
+
+    verify(mNetworkInteractor).isConnectivityAvailable(mOnConnectivityCheckedCaptor.capture());
+    mOnConnectivityCheckedCaptor.getValue().onConnectivityNoNetwork();
 
     verify(mView).showSnackbar(R.string.error_no_network);
 
     verify(mView).showSnackbar(Matchers.eq(R.string.error_no_network));
-  }
-
-  @Test public void openGallery() {
-    mPresenter.openGallery();
-
-    verify(mView).showGallery(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-
-    verify(mView).showGallery(
-        Matchers.eq(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI));
   }
 }

@@ -24,7 +24,7 @@ public class AvatarActivity extends AppCompatActivity {
     if (fragment == null) {
       fragment = new AvatarGeneratorFragment();
       manager.beginTransaction()
-          .add(R.id.avatar_content, fragment, Constants.TAG_AVATAR_GENERATOR_FRAGMENT)
+          .add(R.id.content_avatar, fragment, Constants.TAG_AVATAR_GENERATOR_FRAGMENT)
           .commit();
     }
   }

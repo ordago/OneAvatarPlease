@@ -7,9 +7,11 @@ public interface AvatarGeneratorContract {
   interface View {
     void showSnackbar(int messageResId);
 
-    void showGalleryActionSnackbar(int messageResId, int actionResId);
+    void showGalleryActionSnackbar(int messageResId);
 
     void requestWriteExternalPermission(String permission, int requestCode);
+
+    void generateAvatar();
 
     void loadAvatar();
 
@@ -23,7 +25,7 @@ public interface AvatarGeneratorContract {
 
     void hideAvatarIdentifierError();
 
-    void showGallery(Uri uri);
+    void showGallery(Uri imageUri);
   }
 
   interface Presenter {

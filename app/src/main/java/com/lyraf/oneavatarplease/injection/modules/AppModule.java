@@ -1,4 +1,4 @@
-package com.lyraf.oneavatarplease.dagger.modules;
+package com.lyraf.oneavatarplease.injection.modules;
 
 import android.app.Application;
 import dagger.Module;
@@ -6,7 +6,7 @@ import dagger.Provides;
 import javax.inject.Singleton;
 
 @Module public class AppModule {
-  Application mApplication;
+  private final Application mApplication;
 
   public AppModule(Application application) {
     mApplication = application;

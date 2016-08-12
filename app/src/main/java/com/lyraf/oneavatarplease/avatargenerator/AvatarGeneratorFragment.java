@@ -41,16 +41,18 @@ public class AvatarGeneratorFragment extends Fragment implements AvatarGenerator
   public AvatarGeneratorFragment() {
   }
 
-  @OnClick(R.id.button_avatar_generate) void generateAvatar() {
-    presenter.validateIdentifier(textAvatarIdentifier.getText().toString());
+  @OnClick(R.id.button_avatar_generate) void generateAvatarClick() {
+    presenter.checkConnectivity();
   }
 
-  @OnClick(R.id.button_avatar_save) void saveAvatar() {
+  @OnClick(R.id.button_avatar_save) void saveAvatarClick() {
     presenter.saveAvatar(textAvatarIdentifier.getText().toString());
   }
 
   @Override public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
+    setRetainInstance(true);
 
     App.getAppComponent(getActivity()).inject(this);
   }
@@ -79,18 +81,20 @@ public class AvatarGeneratorFragment extends Fragment implements AvatarGenerator
     Snackbar.make(root, messageResId, Snackbar.LENGTH_SHORT).show();
   }
 
-  @Override public void showGalleryActionSnackbar(int messageResId, int actionResId) {
+  @Override public void showGalleryActionSnackbar(int messageResId) {
     Snackbar.make(root, messageResId, Snackbar.LENGTH_LONG)
-        .setAction(actionResId, new View.OnClickListener() {
-          @Override public void onClick(View view) {
-            presenter.openGallery();
-          }
+        .setAction(R.string.action_avatar_show, view -> {
+          presenter.openGallery();
         })
         .show();
   }
 
   @Override public void requestWriteExternalPermission(String permission, int requestCode) {
     requestPermissions(new String[] { permission }, requestCode);
+  }
+
+  @Override public void generateAvatar() {
+    presenter.validateIdentifier(textAvatarIdentifier.getText().toString());
   }
 
   @Override public void loadAvatar() {
@@ -101,6 +105,7 @@ public class AvatarGeneratorFragment extends Fragment implements AvatarGenerator
         .centerCrop()
         .placeholder(R.drawable.ic_avatar_placeholder)
         .error(R.drawable.ic_avatar_empty)
+        .noFade()
         .into(imageAvatar, new Callback() {
           @Override public void onSuccess() {
             presenter.setGeneratedAvatar(((BitmapDrawable) imageAvatar.getDrawable()).getBitmap());
@@ -134,8 +139,8 @@ public class AvatarGeneratorFragment extends Fragment implements AvatarGenerator
     inputAvatarIdentifier.setErrorEnabled(false);
   }
 
-  @Override public void showGallery(Uri uri) {
-    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+  @Override public void showGallery(Uri imageUri) {
+    Intent intent = new Intent(Intent.ACTION_VIEW, imageUri);
     startActivity(intent);
   }
 
