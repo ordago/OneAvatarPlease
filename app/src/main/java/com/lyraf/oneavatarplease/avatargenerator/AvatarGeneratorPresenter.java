@@ -1,3 +1,28 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2016 Felipe Lyra
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ */
+
 package com.lyraf.oneavatarplease.avatargenerator;
 
 import android.Manifest;
@@ -39,15 +64,18 @@ public class AvatarGeneratorPresenter
     }
   }
 
-  @Override public void setGeneratedAvatar(Bitmap generatedAvatar) {
+  @Override public void generatedAvatar(Bitmap generatedAvatar, String identifier) {
     if (generatedAvatar != null) {
+      mAvatarGeneratorView.hideProgress();
       mAvatarGeneratorView.showSave();
       mGeneratedAvatar = generatedAvatar;
+      mLastIdentifier = identifier;
     }
   }
 
   @Override public void restoreGeneratedAvatar() {
     if (mGeneratedAvatar != null) {
+      mAvatarGeneratorView.showSave();
       mAvatarGeneratorView.showAvatar(mGeneratedAvatar);
     }
   }
@@ -58,9 +86,9 @@ public class AvatarGeneratorPresenter
     } else if (TextUtils.equals(identifier, mLastIdentifier)) {
       mAvatarGeneratorView.showSnackbar(R.string.error_avatar_already_generated);
     } else {
+      mAvatarGeneratorView.showProgress();
       mAvatarGeneratorView.hideSave();
 
-      mLastIdentifier = identifier;
       mAvatarGeneratorView.showSnackbar(R.string.message_avatar_generating);
       mAvatarGeneratorView.hideAvatarIdentifierError();
 
@@ -74,6 +102,21 @@ public class AvatarGeneratorPresenter
 
   @Override public void checkConnectivity() {
     mNetworkInteractor.isConnectivityAvailable(this);
+  }
+
+  @Override public void onConnectivityNoInternet() {
+    mAvatarGeneratorView.hideProgress();
+    mAvatarGeneratorView.showSnackbar(R.string.error_no_internet);
+  }
+
+  @Override public void onConnectivityNoNetwork() {
+    mAvatarGeneratorView.hideProgress();
+    mAvatarGeneratorView.showSnackbar(R.string.error_no_network);
+  }
+
+  @Override public void onConnectivityAvailable() {
+    mAvatarGeneratorView.hideProgress();
+    mAvatarGeneratorView.generateAvatar();
   }
 
   @Override public void OnImageSaveNoPermission() {
@@ -90,17 +133,5 @@ public class AvatarGeneratorPresenter
     mLastSavedAvatarUrl = url;
 
     mAvatarGeneratorView.showGalleryActionSnackbar(R.string.message_avatar_saved);
-  }
-
-  @Override public void onConnectivityNoInternet() {
-    mAvatarGeneratorView.showSnackbar(R.string.error_no_internet);
-  }
-
-  @Override public void onConnectivityNoNetwork() {
-    mAvatarGeneratorView.showSnackbar(R.string.error_no_network);
-  }
-
-  @Override public void onConnectivityAvailable() {
-    mAvatarGeneratorView.generateAvatar();
   }
 }

@@ -1,3 +1,28 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2016 Felipe Lyra
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ */
+
 package com.lyraf.oneavatarplease.avatargenerator;
 
 import android.content.Intent;
@@ -22,6 +47,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.lyraf.oneavatarplease.App;
 import com.lyraf.oneavatarplease.R;
 import com.squareup.picasso.Callback;
@@ -31,10 +57,11 @@ import javax.inject.Inject;
 public class AvatarGeneratorFragment extends Fragment implements AvatarGeneratorContract.View {
   @Inject AvatarGeneratorPresenter presenter;
   @BindView(R.id.avatar_generator_root) LinearLayout root;
-  @BindView(R.id.button_avatar_save) Button buttonSaveAvatar;
   @BindView(R.id.image_avatar) ImageView imageAvatar;
+  @BindView(R.id.progress_avatar) CircularProgressView progressAvatar;
   @BindView(R.id.floating_text_avatar_identifier) TextInputLayout inputAvatarIdentifier;
   @BindView(R.id.text_avatar_identifier) EditText textAvatarIdentifier;
+  @BindView(R.id.button_avatar_save) Button buttonSaveAvatar;
 
   private Unbinder mUnbinder;
 
@@ -100,18 +127,18 @@ public class AvatarGeneratorFragment extends Fragment implements AvatarGenerator
   @Override public void loadAvatar() {
     Picasso.with(getActivity())
         .load(String.format(getResources().getString(R.string.url_avatar),
-            textAvatarIdentifier.getText().toString()))
+            Uri.encode(textAvatarIdentifier.getText().toString())))
         .fit()
         .centerCrop()
-        .placeholder(R.drawable.ic_avatar_placeholder)
-        .error(R.drawable.ic_avatar_empty)
-        .noFade()
         .into(imageAvatar, new Callback() {
           @Override public void onSuccess() {
-            presenter.setGeneratedAvatar(((BitmapDrawable) imageAvatar.getDrawable()).getBitmap());
+            presenter.generatedAvatar(((BitmapDrawable) imageAvatar.getDrawable()).getBitmap(),
+                textAvatarIdentifier.getText().toString());
           }
 
           @Override public void onError() {
+            imageAvatar.setImageResource(R.drawable.ic_avatar_empty);
+
             presenter.checkConnectivity();
           }
         });
@@ -121,12 +148,20 @@ public class AvatarGeneratorFragment extends Fragment implements AvatarGenerator
     imageAvatar.setImageBitmap(avatar);
   }
 
-  @Override public void hideSave() {
-    buttonSaveAvatar.setVisibility(View.GONE);
+  @Override public void showProgress() {
+    progressAvatar.setVisibility(View.VISIBLE);
+  }
+
+  @Override public void hideProgress() {
+    progressAvatar.setVisibility(View.GONE);
   }
 
   @Override public void showSave() {
     buttonSaveAvatar.setVisibility(View.VISIBLE);
+  }
+
+  @Override public void hideSave() {
+    buttonSaveAvatar.setVisibility(View.GONE);
   }
 
   @Override public void showAvatarIdentifierError() {
