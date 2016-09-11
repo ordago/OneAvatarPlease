@@ -68,6 +68,8 @@ dependencies {
   compile "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
   compile "com.android.support:support-v4:$rootProject.supportLibraryVersion"
   compile "com.android.support:design:$rootProject.supportLibraryVersion"
+  compile "com.google.firebase:firebase-core:$rootProject.firebaseVersion"
+  compile "com.google.firebase:firebase-crash:$rootProject.firebaseVersion"
   compile "com.squareup.picasso:picasso:$rootProject.picassoVersion"
   compile "com.jakewharton:butterknife:$rootProject.butterknifeVersion"
   compile "com.google.dagger:dagger:$rootProject.daggerVersion"
@@ -80,3 +82,5 @@ dependencies {
     androidTestCompileDependency.exclude group: 'com.android.support'
   }
 }
+
+apply plugin: 'com.google.gms.google-services'

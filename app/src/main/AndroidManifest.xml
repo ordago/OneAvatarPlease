@@ -39,7 +39,7 @@
       android:supportsRtl="false"
       android:theme="@style/AppTheme">
     <activity
-        android:name=".avatargenerator.AvatarActivity">
+        android:name=".avatargenerator.AvatarGeneratorActivity">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
 

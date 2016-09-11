@@ -31,7 +31,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.lyraf.oneavatarplease.R;
 import com.lyraf.oneavatarplease.utils.Constants;
 
-public class AvatarActivity extends AppCompatActivity {
+public class AvatarGeneratorActivity extends AppCompatActivity {
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_avatar);
